@@ -20,7 +20,12 @@ $router->post('dec_no','Index@dec_no');
 $router->post('sign','Index@sign');
 
 
-$router->post('res','Index@res');
-$router->post('login','Index@login');
+//$router->post('res','Index@res');
+//$router->post('login','Index@login');
 $router->post('loginToken','Index@loginToken');
+
+$router->post('res','LoginController@res');
+$router->post('login','LoginController@login');
+//$router->post('res','LoginController@res');
+
 
