@@ -40,10 +40,15 @@ Class LoginController extends Controller
         $res=DB::table('login')->where(['user_name'=>$user_name,'user_pwd'=>$user_pwd])->first();
 
         if($res){
-            return json_encode(['msg'=>'登陆成功','status'=>1],JSON_UNESCAPED_UNICODE);
+            return json_encode(['msg'=>'登陆成功','status'=>1,'user_id'=>$res->user_id],JSON_UNESCAPED_UNICODE);
         }else{
             return json_encode(['msg'=>'用户名或者密码错误','status'=>0],JSON_UNESCAPED_UNICODE);
         }
+    }
+    //定义token值
+    public function loginToken($uid){
+
+        return substr(sha1($uid.time() .Str::random(10)),5,15);
     }
 
 }
