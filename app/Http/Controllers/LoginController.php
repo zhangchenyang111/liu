@@ -40,15 +40,22 @@ Class LoginController extends Controller
         $res=DB::table('login')->where(['user_name'=>$user_name,'user_pwd'=>$user_pwd])->first();
 
         if($res){
-            return json_encode(['msg'=>'登陆成功','status'=>1,'user_id'=>$res->user_id],JSON_UNESCAPED_UNICODE);
+            $token=$this->loginToken($res->user_id);
+//               print_r($token);die;
+            $redis_token_key='login_token:uid:'.$res->user_id;
+            Redis::set($redis_token_key,$token);
+            Redis::expire($redis_token_key,604800);
+
+
+            return json_encode(['msg'=>'登陆成功','status'=>1,'token'=>$token,'user_id'=>$res->user_id],JSON_UNESCAPED_UNICODE);
         }else{
             return json_encode(['msg'=>'用户名或者密码错误','status'=>0],JSON_UNESCAPED_UNICODE);
         }
     }
     //定义token值
-    public function loginToken($uid){
+    public function loginToken($user_id){
 
-        return substr(sha1($uid.time() .Str::random(10)),5,15);
+        return substr(sha1($user_id.time() .Str::random(10)),5,15);
     }
 
 }
