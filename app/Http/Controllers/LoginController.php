@@ -42,10 +42,10 @@ Class LoginController extends Controller
         if($res){
             $token=$this->loginToken($res->user_id);
 //               print_r($token);die;
+
             $redis_token_key='login_token:uid:'.$res->user_id;
             Redis::set($redis_token_key,$token);
             Redis::expire($redis_token_key,604800);
-
 
             return json_encode(['msg'=>'登陆成功','status'=>1,'token'=>$token,'user_id'=>$res->user_id],JSON_UNESCAPED_UNICODE);
         }else{
