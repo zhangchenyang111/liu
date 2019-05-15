@@ -28,4 +28,9 @@ $router->post('res','LoginController@res');
 $router->post('login','LoginController@login');
 $router->post('loginToken','LoginController@loginToken');
 
+//$router->get('center','LoginController@center');
+
+$router->group(['middleware' => 'token'], function () use($router) {
+    $router->get('center','LoginController@center');
+});
 

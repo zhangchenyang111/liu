@@ -43,7 +43,7 @@ Class LoginController extends Controller
             $token=$this->loginToken($res->user_id);
 //               print_r($token);die;
 
-            $redis_token_key='login_token:uid:'.$res->user_id;
+            $redis_token_key='login_token:user_id:'.$res->user_id;
             Redis::set($redis_token_key,$token);
             Redis::expire($redis_token_key,604800);
 
@@ -54,8 +54,23 @@ Class LoginController extends Controller
     }
     //定义token值
     public function loginToken($user_id){
-
         return substr(sha1($user_id.time() .Str::random(10)),5,15);
     }
+    //个人中心
+    public function center(Request $request){
+        $user_id=$_GET['user_id'];
+        $token=$_GET['token'];
+        $data=DB::table('login')->where(['user_id'=>$user_id])->first();
+        if($data){
+//            $data = $data->toArray();
+            $arr = [
+                "code"=>1,
+                "msg"=>$data,
+            ];
+            return json_encode($arr);
+        }
+
+    }
+
 
 }

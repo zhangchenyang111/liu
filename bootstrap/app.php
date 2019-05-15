@@ -58,13 +58,15 @@ $app->register(Illuminate\Redis\RedisServiceProvider::class);
 |
 */
 
-// $app->middleware([
-//     App\Http\Middleware\ExampleMiddleware::class
-// ]);
+ $app->middleware([
+//     App\Http\Middleware\ExampleMiddleware::class,
+      App\Http\Middleware\kuayu::class
+ ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+ $app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+    'token' => App\Http\Middleware\token::class,
+]);
 
 /*
 |--------------------------------------------------------------------------
