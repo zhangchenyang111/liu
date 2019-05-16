@@ -19,7 +19,7 @@ Class LoginController extends Controller
             'user_name'=>$user_name,
             'user_pwd'=>$user_pwd
         ];
-        $api_url='http://passport.api.com/res';
+        $api_url='http://39.107.72.115:8096/res';
         $ch=curl_init();
         curl_setopt($ch,CURLOPT_URL,$api_url);
         curl_setopt($ch,CURLOPT_POST,0);
@@ -44,7 +44,7 @@ Class LoginController extends Controller
         $user_pwd=$request->input('user_pwd');
 //        $user_name=123;
 //        $user_pwd=123;
-        $api_url="http://passport.api.com/login?user_name=$user_name&user_pwd=$user_pwd";
+        $api_url="http://39.107.72.115:8096/login?user_name=$user_name&user_pwd=$user_pwd";
         return $this->urlget($api_url);
 
     }
@@ -73,7 +73,7 @@ Class LoginController extends Controller
     public function center(Request $request){
         $user_id=$_GET['user_id'];
         $token=$_GET['token'];
-        $url="http://passport.api.com/center?user_id=$user_id";
+        $url="http://39.107.72.115:8096/center?user_id=$user_id";
         return $this->urlget($url);
 
     }
