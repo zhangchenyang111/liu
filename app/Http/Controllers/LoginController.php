@@ -15,42 +15,55 @@ Class LoginController extends Controller
     {
         $user_name = $request->input('user_name');
         $user_pwd = $request->input('user_pwd');
-//        $user_name='zhangyang';
-//        $user_pwd='123456';
-        $res = DB::table('login')->where(['user_name' => $user_name])->first();
-        if ($res) {
-            return json_encode(['msg' => '用户名已存在', 'status' => 0], JSON_UNESCAPED_UNICODE);
-        } else {
-            $arr = [
-                'user_name' => $user_name,
-                'user_pwd' => $user_pwd
+        $data=[
+            'user_name'=>$user_name,
+            'user_pwd'=>$user_pwd
+        ];
+        $api_url='http://passport.api.com/res';
+        $ch=curl_init();
+        curl_setopt($ch,CURLOPT_URL,$api_url);
+        curl_setopt($ch,CURLOPT_POST,0);
+        curl_setopt($ch,CURLOPT_POSTFIELDS,$data);
+//        curl_setopt($ch,CURLOPT_HTTPHEADER,[
+//            'Content-Type:text/plain'
+//        ]);
+        $response=curl_exec($ch);
+        $error=curl_errno($ch);
+        if($error){
+            $response=[
+                'errno'=>5001,
+                'msg'=>'curl err:'.$error
             ];
-            $data = DB::table('login')->insert($arr);
-            if ($data) {
-                return json_encode(['msg' => '注册成功', 'status' => 1], JSON_UNESCAPED_UNICODE);
-            } else {
-                return json_encode(['msg' => '注册失败', 'status' => 0], JSON_UNESCAPED_UNICODE);
-            }
         }
+        curl_close($ch);
+        return $response;
     }
     //登录
     public function login(Request $request){
         $user_name=$request->input('user_name');
         $user_pwd=$request->input('user_pwd');
-        $res=DB::table('login')->where(['user_name'=>$user_name,'user_pwd'=>$user_pwd])->first();
+//        $user_name=123;
+//        $user_pwd=123;
+        $api_url="http://passport.api.com/login?user_name=$user_name&user_pwd=$user_pwd";
+        return $this->urlget($api_url);
 
-        if($res){
-            $token=$this->loginToken($res->user_id);
-//               print_r($token);die;
+    }
 
-            $redis_token_key='login_token:user_id:'.$res->user_id;
-            Redis::set($redis_token_key,$token);
-            Redis::expire($redis_token_key,604800);
-
-            return json_encode(['msg'=>'登陆成功','status'=>1,'token'=>$token,'user_id'=>$res->user_id],JSON_UNESCAPED_UNICODE);
-        }else{
-            return json_encode(['msg'=>'用户名或者密码错误','status'=>0],JSON_UNESCAPED_UNICODE);
+    public function urlget($url){
+        $ch=curl_init();
+        curl_setopt($ch,CURLOPT_URL,$url);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+        $response=curl_exec($ch);
+        $error=curl_errno($ch);
+        if($error){
+            $response=[
+                'errno'=>5001,
+                'msg'=>'curl err:'.$error
+            ];
         }
+         curl_close($ch);
+        return $response;
+
     }
     //定义token值
     public function loginToken($user_id){
@@ -60,15 +73,8 @@ Class LoginController extends Controller
     public function center(Request $request){
         $user_id=$_GET['user_id'];
         $token=$_GET['token'];
-        $data=DB::table('login')->where(['user_id'=>$user_id])->first();
-        if($data){
-//            $data = $data->toArray();
-            $arr = [
-                "code"=>1,
-                "msg"=>$data,
-            ];
-            return json_encode($arr);
-        }
+        $url="http://passport.api.com/center?user_id=$user_id";
+        return $this->urlget($url);
 
     }
 
